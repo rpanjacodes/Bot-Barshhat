@@ -1,47 +1,73 @@
-const mySecret = process.env['b_id']
-// (c) R.Panja#9236
+//(c) R.Panja And Aman
 const host = require('express')();
-host.get('/', (req, res) => res.send('Status: 443'));
+host.get('/', (req, res) => res.send('Status: online'));
 host.listen(2023);
 
-const Discord = require("discord.js");
-//this is the official discord.js wrapper for the Discord Api, which we use!
-const onboot = require('./onboot');
-const colors = require("colors"); //this Package is used, to change the colors of our Console! (optional and doesnt effect performance)
-const fs = require("fs"); //this package is for reading files and getting their inputs
-//Creating the Discord.js Client for This Bot with some default settings ;) and with partials, so you can fetch OLD messages
+const Discord = require("discord.js"),
+Enmap = require('enmap');
+
 const client = new Discord.Client({
   intents: [
     Discord.GatewayIntentBits.Guilds,
     Discord.GatewayIntentBits.GuildMessages,
     Discord.GatewayIntentBits.MessageContent
   ],
+  shards: 'auto',
+  makeCache: Discord.Options.cacheWithLimits({
+    ApplicationCommandManager: 0,
+    AutoModerationRuleManager: 0,
+    BaseGuildEmojiManager: 1,
+    CategoryChannelChildManager: 0,
+    GuildApplicationCommandManager: 0,
+    GuildBanManager: 0,
+    GuildEmojiManager: 1,
+    GuildEmojiRoleManager: 0,
+    GuildForumThreadManager: 0,
+    GuildInviteManager: 0,
+    GuildMemberManager: {
+      maxSize: 1,
+      keepOverLimit: (member) => member.user.id === client.user.id
+    },
+    GuildMemberRoleManager: 0,
+    GuildScheduledEventManager: 0,
+    GuildStickerManager: 0,
+    GuildTextThreadManager: 0,
+    MessageManager: 0,
+    PresenceManager: 0,
+    ReactionManager: 0,
+    ReactionUserManager: 0,
+    StageInstanceManager: 0,
+    ThreadManager: 0,
+    ThreadMemberManager: 0,
+    UserManager: 0,
+    VoiceStateManager: 0
+  }),
   presence: {
-    afk: false,
-    status: 'idle',
     activities: [{
-      name: `System Runtime`,
-      type: Discord.ActivityType.Watching
+      name: `Barshhat`,
+      type: Discord.ActivityType.Streaming,
+      url: `https://twitch.tv/#`
     }]
   }
 });
-//Client variables to use everywhere
-client.commands = new Discord.Collection(); //an collection (like a digital map(database)) for all your commands
-client.aliases = new Discord.Collection(); //an collection for all your command-aliases
-client.categories = fs.readdirSync("./commands/"); //categories
-client.cooldowns = new Discord.Collection(); //an collection for cooldown commands of each user
-//Loading files, with the client variable like Command Handler, Event Handler, ...
+
+client.discord = Discord;
+client.config = require('./util/config');
+client.commands = new Discord.Collection();
+client.aliases = new Discord.Collection();
+client.cooldowns = new Discord.Collection();
+client.categories = client.config.fs.readdirSync("./commands/");
+
+client.stats = new Enmap({name :"stats", ensureProps: false, dataDir: "./databases/stats"});
+client.chatbot = new Enmap({name: "chatbot", ensureProps: false, dataDir: "./databases/chatbot"});
+client.settings = new Enmap({name :"settings", ensureProps: false, dataDir: "./databases/settings"});
+
 ["command", "events"].forEach(handler => {
     require(`./handlers/${handler}`)(client);
 });
-//Loading files, with the client variable like modules
+
 ["chatfeature"].forEach(handler => {
     require(`./modules/${handler}`)(client);
 });
-const Enmap = require("enmap");
-client.chatbot = new Enmap({name: "chatbot", ensureProps: false, dataDir: "./databases/chatbot"});
-client.stats = new Enmap({name :"stats", ensureProps: false, dataDir: "./databases/stats"})
-client.settings = new Enmap({name :"settings", ensureProps: false, dataDir: "./databases/settings"})
-//login into the bot
-onboot(client, process.env.token);
 
+client.config.onboot(client, client.config.token);

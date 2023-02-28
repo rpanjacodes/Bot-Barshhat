@@ -1,7 +1,4 @@
-const Discord = require("discord.js");
-const config = require("../../botconfig/config")
-const ee = require("../../botconfig/embed");
-
+//(c) R.Panja And Aman
 module.exports = {
   name: "serverinfo",
   aliases: ["sinfo"],
@@ -9,12 +6,19 @@ module.exports = {
   description: "Shows info about a server",
   usage: "serverinfo",
   run: async (client, message, args, cmduser, text, prefix) => {
+    const {
+      config,
+      discord: {
+        EmbedBuilder
+      }
+    } = client;
+    const owner = await client.users.fetch(message.guild.ownerId);
     try {
       message.channel.send({
         embeds: [
-          new Discord.EmbedBuilder()
+          new EmbedBuilder()
             .setTitle("Server Information")
-            .setColor(ee.color)
+            .setColor(config.color)
             .addFields(
               {
                 name: "Server Name",
@@ -22,7 +26,7 @@ module.exports = {
               },
               {
                 name: "Owner",
-                value: "\`" + `${message.guild.owner.user.username}#${message.guild.owner.user.discriminator}\`"`,
+                value: "\`" + `${owner.tag}\`"`,
                 inline: true
               },
               {
@@ -58,8 +62,8 @@ module.exports = {
       return message.channel.send({
         embeds: [
           new EmbedBuilder()
-            .setColor(ee.wrongcolor)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.wrongcolor)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`❌ ERROR | An error occurred`)
             .setDescription(`\`\`\`${e.stack}\`\`\``)
         ]

@@ -1,22 +1,28 @@
-const { EmbedBuilder } = require("discord.js")
-const config = require("../../botconfig/config")
-const ee = require("../../botconfig/embed")
+//(c) R.Panja And Aman
 module.exports = {
   name: "developer",
   category: "🔰 Info",
-  aliases: ["dev",],
+  aliases: ["dev"],
   description: "Shows Information about the Developer",
   useage: "developer",
   run: async (client, message, args) => {
+    const {
+      config,
+      discord: {
+        EmbedBuilder
+      }
+    } = client;
+    
     try {
+      const dev = await client.users.fetch(config.dev);
       message.channel.send({
         embeds: [
           new EmbedBuilder()
-            .setColor(ee.color)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.color)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTimestamp()
-            .setThumbnail("https://images-ext-2.discordapp.net/external/_GrxoxMG6RlyDuRI_B5NoT1expbvclwUBkBm7Ut7um4/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/909798528694489098/db9d20678018a94b9affea14c1e85ffd.png")
-            .setTitle("R.Panja | Lead Developer of Barshhat ")
+            .setThumbnail(dev.displayAvatarURL({ dynamic: true }))
+            .setTitle(`${dev.username} | Lead Developer of Barshhat`)
         ]
       }).catch(error => console.log(error));
     } catch (e) {
@@ -24,10 +30,10 @@ module.exports = {
       return message.channel.send({
         embeds: [
           new EmbedBuilder()
-            .setColor(ee.wrongcolor)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.wrongcolor)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`❌ ERROR | An error occurred`)
-            .setDescription(`\`\`\`${e.stack}\`\`\`R.Panja Is my Developer.`)
+            .setDescription(`\`\`\`${e.stack}\`\`\`${dev.username} Is my Developer.`)
         ]
       });
     }

@@ -1,18 +1,19 @@
-// (c) R.Panja#9236 
-
-const config = require("../botconfig/config");
+//(c) R.Panja And Aman
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
-const { AttachmentBuilder } = require("discord.js");
-//npm i colors
-module.exports = client => {
-  console.log(" :: LOADED CHATFEATURE.JS ".bgGreen)
-        
 
-  client.on("messageCreate", message => {
+module.exports = client => {
+  const {
+    config,
+    discord: {
+      AttachmentBuilder
+    }
+  } = client;
+  
+  client.on("messageCreate", async message => {
     if(message.author.bot) return;
     if(message.channel.type === "dm"){
-      
+      await message.channel.sendTyping();
       fetch(`http://api.brainshop.ai/get?bid=${config.b_id}&key=${config.b_key}&uid=1&msg=${message.content}`).then(res => res.json())
         .then(data => {
         message.channel.send({ content: data.cnt }).catch(e=>console.log("ERROR | " + e.stack))
@@ -21,9 +22,13 @@ module.exports = client => {
       return;
     }
     if(client.chatbot.get(message.guild.id, "channels").includes(message.channel.id)){
-      if(message.attachments.size > 0)
-        return message.reply({ content: "Look at this too...", files: [new AttachmentBuilder("./I_CANNOT_READ_FILES.png")]})
-
+      await message.channel.sendTyping();
+      if(message.attachments.size > 0) return message.reply({
+        content: "Look at this too...",
+        files: [
+          new AttachmentBuilder("./I_CANNOT_READ_FILES.png")
+        ]
+      });
       fetch(`http://api.brainshop.ai/get?bid=${config.b_id}&key=${config.b_key}&uid=1&msg=${encodeURIComponent(message)}`)
         .then(res => res.json()
         .then(data => {

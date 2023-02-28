@@ -1,7 +1,4 @@
-const { EmbedBuilder } = require("discord.js");
-const config = require("../../botconfig/config");
-const ee = require("../../botconfig/embed");
-
+//(c) R.Panja And Aman
 module.exports = {
   name: "ping",
   category: "🔰 Info",
@@ -10,19 +7,26 @@ module.exports = {
   usage: "ping",
   description: "Gives you information on how fast the Bot can respond to you",
   run: async (client, message, args, user, text, prefix) => {
+    const {
+      config,
+      discord: {
+        EmbedBuilder
+      }
+    } = client;
+    
     try {
       message.channel.send({
         embeds: [
           new EmbedBuilder()
-            .setColor(ee.color)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.color)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`🏓 Pinging....`)
         ]
       }).then(msg => msg.edit({
         embeds: [
           new EmbedBuilder()
-            .setColor(ee.color)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.color)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`🏓 Ping is \`${Math.round(client.ws.ping)}ms\``)
         ]
       }))
@@ -31,8 +35,8 @@ module.exports = {
       return message.channel.send({
         embeds: [
           new EmbedBuilder()
-            .setColor(ee.wrongcolor)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.wrongcolor)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`❌ ERROR | An error occurred`)
             .setDescription(`\`\`\`${e.stack}\`\`\``)
         ]

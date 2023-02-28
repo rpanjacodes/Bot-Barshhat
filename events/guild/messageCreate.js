@@ -1,15 +1,20 @@
-const config = require("../../botconfig/config"); //loading config file with token and prefix, and settings
-const ee = require("../../botconfig/embed"); //Loading all embed settings like color footertext and icon ...
-const Discord = require("discord.js"); //this is the official discord.js wrapper for the Discord Api, which we use!
-const { escapeRegex } = require("../../handlers/functions"); //Loading all needed functions
-//here the event starts
+//(c) R.Panja And Aman
+const { escapeRegex } = require("../../handlers/functions");
+
 module.exports = async (client, message) => {
+  const {
+    config,
+    discord: {
+      EmbedBuilder,
+      Collection
+    }
+  } = client;
+  
   try {
     client.stats.ensure("global", {
       commands: 0,
       messages: 0,
     })
-    //if the message is not in a guild (aka in dms), return aka ignore the inputs
     if (!message.guild) return;
     client.stats.ensure(message.guild.id, {
       commands: 0,
@@ -21,34 +26,26 @@ module.exports = async (client, message) => {
     client.chatbot.ensure(message.guild.id, {
       channels: []
     })
-    // if the message  author is a bot, return aka ignore the inputs
+    
     if (message.author.bot) return;
-    //if the channel is on partial fetch it
     if (message.channel.partial) await message.channel.fetch();
-    //if the message is on partial fetch it
     if (message.partial) await message.fetch();
-    //get the current prefix from the database
     let prefix = client.settings.get(message.guild.id, "prefix");
-    //if not in the database for some reason use the default prefix
     if (prefix === null) prefix = config.prefix;
-    //the prefix can be a Mention of the Bot / The defined Prefix of the Bot
+    
     const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${escapeRegex(prefix)})\\s*`);
-    //if its not that then return
     if (!prefixRegex.test(message.content)) return;
-    //now define the right prefix either ping or not ping
     const [, matchedPrefix] = message.content.match(prefixRegex);
-    //create the arguments with sliceing of of the rightprefix length
     const args = message.content.slice(matchedPrefix.length).trim().split(/ +/);
-    //creating the cmd argument by shifting the args by 1
     const cmd = args.shift().toLowerCase();
-    //if no cmd added return error
+    
     if (cmd.length === 0) {
       if (matchedPrefix.includes(client.user.id))
         return message.channel.send({
           embeds: [
-            new Discord.EmbedBuilder()
-              .setColor(ee.color)
-              .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            new EmbedBuilder()
+              .setColor(config.color)
+              .setFooter({ text: config.footertext, iconURL: config.footericon })
               .setTitle(`why You Pinged Me. Please ${prefix} This my Prefix My it. `)
               .setDescription(`To see all Commands type: \`${prefix}help\``)
           ]
@@ -62,7 +59,7 @@ module.exports = async (client, message) => {
     //if the command is now valid
     if (command) {
       if (!client.cooldowns.has(command.name)) { //if its not in the cooldown, set it too there
-        client.cooldowns.set(command.name, new Discord.Collection());
+        client.cooldowns.set(command.name, new Collection());
       }
       const now = Date.now(); //get the current time
       const timestamps = client.cooldowns.get(command.name); //get the timestamp of the last used commands
@@ -73,9 +70,9 @@ module.exports = async (client, message) => {
           const timeLeft = (expirationTime - now) / 1000; //get the lefttime
           return message.channel.send({
             embeds: [
-              new Discord.EmbedBuilder()
-                .setColor(ee.wrongcolor)
-                .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+              new EmbedBuilder()
+                .setColor(config.wrongcolor)
+                .setFooter({ text: config.footertext, iconURL: config.footericon })
                 .setTitle(`❌ Please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`)
             ]
           }); //send an information message
@@ -90,9 +87,9 @@ module.exports = async (client, message) => {
         if (command.memberpermissions) {
           if (!command.memberpermissions.every(perm => message.member.permissions.toArray().includes(perm))) return message.channel.send({
             embeds: [
-              new Discord.EmbedBuilder()
-                .setColor(ee.wrongcolor)
-                .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+              new EmbedBuilder()
+                .setColor(config.wrongcolor)
+                .setFooter({ text: config.footertext, iconURL: config.footericon })
                 .setTitle("❌ Error | You are not allowed to run this command!")
                 .setDescription(`You need these Permissions: \`${command.memberpermissions.join("`, ``")}\``)
             ]
@@ -102,9 +99,9 @@ module.exports = async (client, message) => {
         if (!['Administrator'].every(perm => message.guild.members.me.permissions.toArray().includes(perm))) {
           return message.channel.send({
             embeds: [
-              new Discord.EmbedBuilder()
-                .setColor(ee.wrongcolor)
-                .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+              new EmbedBuilder()
+                .setColor(config.wrongcolor)
+                .setFooter({ text: config.footertext, iconURL: config.footericon })
                 .setTitle("❌ Error | I don't have enough Permissions!")
                 .setDescription("Please give me ADMINISTRATOR, because i need it to delete Messages, Create Channel and execute all Admin Commands ")
             ]
@@ -118,9 +115,9 @@ module.exports = async (client, message) => {
         console.log(String(e.stack).red)
         return message.channel.send({
           embeds: [
-            new Discord.EmbedBuilder()
-              .setColor(ee.wrongcolor)
-              .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            new EmbedBuilder()
+              .setColor(config.wrongcolor)
+              .setFooter({ text: config.footertext, iconURL: config.footericon })
               .setTitle("❌ Something went wrong while, running the: `" + command.name + "` command")
               .setDescription(`\`\`\`${e.message}\`\`\``)
           ]
@@ -130,9 +127,9 @@ module.exports = async (client, message) => {
     else //if the command is not found send an info msg
       return message.channel.send({
         embeds: [
-          new Discord.EmbedBuilder()
-            .setColor(ee.wrongcolor)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+          new EmbedBuilder()
+            .setColor(config.wrongcolor)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`❌ Unkown command, try: **\`${prefix}help\`**`)
             .setDescription(`To play Music simply type \`${prefix}play <Title / Url>\``)
         ]
@@ -140,7 +137,7 @@ module.exports = async (client, message) => {
   } catch (e) {
     return message.channel.send({
       embeds: [
-        new Discord.EmbedBuilder()
+        new EmbedBuilder()
           .setColor("Red")
           .setTitle(`❌ ERROR | An error occurred`)
           .setDescription(`\`\`\`${e.stack}\`\`\``)

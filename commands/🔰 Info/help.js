@@ -1,6 +1,4 @@
-const { EmbedBuilder } = require("discord.js");
-const config = require("../../botconfig/config");
-const ee = require("../../botconfig/embed");
+//(c) R.Panja And Aman
 module.exports = {
     name: "help",
     category: "🔰 Info",
@@ -9,13 +7,20 @@ module.exports = {
     usage: "help [Command]",
     description: "Returns all Commmands, or one specific command",
     run: async (client, message, args, user, text, prefix) => {
+      const {
+        config,
+        discord: {
+          EmbedBuilder
+        }
+      } = client;
+      
       try{
         if (args[0]) {
           const embed = new EmbedBuilder();
           const cmd = client.commands.get(args[0].toLowerCase()) || client.commands.get(client.aliases.get(args[0].toLowerCase()));
           if (!cmd) {
               return message.channel.send({
-                embeds: [embed.setColor(ee.wrongcolor).setDescription(`No Information found for command **${args[0].toLowerCase()}**`)]
+                embeds: [embed.setColor(config.wrongcolor).setDescription(`No Information found for command **${args[0].toLowerCase()}**`)]
               });
           }
           if (cmd.name) embed.addFields({ name: "**Command name**", value: `\`${cmd.name}\`` });
@@ -32,10 +37,10 @@ module.exports = {
               embed.addFields({ name: "**Useage**", value: `\`${config.prefix}${cmd.useage}\`` });
               embed.setFooter({ text: "Syntax: <> = required, [] = optional" });
           }
-          return message.channel.send(embed.setColor(ee.main));
+          return message.channel.send(embed.setColor(config.main));
         } else {
           const embed = new EmbedBuilder()
-              .setColor(ee.color)
+              .setColor(config.color)
               .setThumbnail(client.user.displayAvatarURL())
               .setTitle("HELP MENU 🔰 Commands")
               .setFooter({ text: `To see command descriptions and inforamtion, type: ${config.prefix}help [CMD NAME]`, iconURL: client.user.displayAvatarURL() });
@@ -84,8 +89,8 @@ module.exports = {
         return message.channel.send({
           embeds: [
             new EmbedBuilder()
-            .setColor(ee.wrongcolor)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.wrongcolor)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`❌ ERROR | An error occurred`)
             .setDescription(`\`\`\`${e.stack}\`\`\``)
           ]

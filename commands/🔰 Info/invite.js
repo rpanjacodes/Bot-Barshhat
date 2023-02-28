@@ -1,7 +1,4 @@
-const config = require("../../botconfig/config");
-const ee = require("../../botconfig/embed");
-const { EmbedBuilder } = require('discord.js');
-
+//(c) R.Panja And Aman
 module.exports = {
   name: "invite",
   category: "🔰 Info",
@@ -10,13 +7,20 @@ module.exports = {
   usage: "invite",
   description: "Gives you an Invite link for this Bot",
   run: async (client, message, args, user, text, prefix) => {
+    const {
+      config,
+      discord: {
+        EmbedBuilder
+      }
+    } = client;
+    
     try {
       message.channel.send({
         embeds: [
           new EmbedBuilder()
-            .setColor(ee.color)
+            .setColor(config.color)
             .setTitle(":heart: Thanks for inviting me!")
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setURL("https://bit.ly/3u26wKW")
             .setDescription("[Click here](https://bit.ly/3u26wKW)")
         ]
@@ -26,8 +30,8 @@ module.exports = {
       return message.channel.send({
         embeds: [
           new EmbedBuilder()
-            .setColor(ee.wrongcolor)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.wrongcolor)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`❌ ERROR | An error occurred`)
             .setDescription(`\`\`\`${e.stack}\`\`\``)
         ]

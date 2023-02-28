@@ -1,7 +1,4 @@
-const Discord = require("discord.js");
-const config = require("../../botconfig/config");
-const ee = require("../../botconfig/embed");
-
+//(c) R.Panja And Aman
 module.exports = {
   name: "userinfo",
   aliases: ["uinfo"],
@@ -9,20 +6,27 @@ module.exports = {
   description: "Get information about a user",
   usage: "userinfo [@USER]",
   run: async (client, message, args, cmduser, text, prefix) => {
+    const {
+      config,
+      discord: {
+        EmbedBuilder
+      }
+    } = client;
+    
     try {
       const user = message.mentions.users.first() || message.author;
       if (!user)
         return message.channel.send({
           embeds: [
             new EmbedBuilder()
-              .setColor(ee.wrongcolor)
-              .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+              .setColor(config.wrongcolor)
+              .setFooter({ text: config.footertext, iconURL: config.footericon })
               .setTitle("❌ Error | Please Mention the User you wanna get Information about")
           ]
         });
       message.channel.send({
         embeds: [
-          new Discord.EmbedBuilder()
+          new EmbedBuilder()
             .setTitle("User Info:")
             .addFields(
               {
@@ -35,12 +39,12 @@ module.exports = {
               },
               {
                 name: "Playing",
-                value: `\`[ ${user.presence.activities} ]\``,
+                value: `\`[ ${user.presence?.activities ? user.presence.activities : 'None'} ]\``,
                 inline: true
               },
               {
                 name: "Status",
-                value: `\`${user.presence.status}\``,
+                value: `\`${user.presence?.status ? user.presence.status : 'offline'}\``,
                 inline: true
               },
               {
@@ -48,8 +52,8 @@ module.exports = {
                 value: `\`${user.createdAt}\``
               }
             )
-            .setColor(ee.color)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.color)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 1024 }))
         ]
       });
@@ -58,8 +62,8 @@ module.exports = {
       return message.channel.send({
         embeds: [
           new EmbedBuilder()
-            .setColor(ee.wrongcolor)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.wrongcolor)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`❌ ERROR | An error occurred`)
             .setDescription(`\`\`\`${e.stack}\`\`\``)
         ]

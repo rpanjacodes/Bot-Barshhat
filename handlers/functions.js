@@ -1,3 +1,4 @@
+//(c) R.Panja And Aman
 module.exports = {
   //get a member lol
   getMember: function(message, toFind = "") {

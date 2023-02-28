@@ -1,7 +1,4 @@
-const { EmbedBuilder } = require("discord.js");
-const config = require("../../botconfig/config");
-const ee = require("../../botconfig/embed");
-
+//(c) R.Panja And Aman
 module.exports = {
     name: "vote",
     category: "🔰 Info",
@@ -10,15 +7,22 @@ module.exports = {
     usage: "vote",
     description: "Gives You a Currect voting Link.",
     run: async (client, message, args, user, text, prefix) => {
+    const {
+      config,
+      discord: {
+        EmbedBuilder
+      }
+    } = client;
+    
     try{
       message.channel.send({
         embeds: [
           new EmbedBuilder()
-        .setColor(ee.color)
+        .setColor(config.color)
         .setTitle("🙏Vote Me Please !🙏")
-        .setFooter({ text: ee.footertext, iconURL: ee.footericon })
-        .setURL("")
-        .setDescription("[Vote Me] hoola ")
+        .setFooter({ text: config.footertext, iconURL: config.footericon })
+        .setURL(`https://top.gg/bot/${client.user.id}`)
+        .setDescription(`[Vote](https://top.gg/bot/${client.user.id})`)
         ]
       });
     } catch (e) {
@@ -26,8 +30,8 @@ module.exports = {
         return message.channel.send({
           embeds: [
             new EmbedBuilder()
-            .setColor(ee.wrongcolor)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.wrongcolor)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`❌ ERROR | An error occurred`)
             .setDescription(`\`\`\`${e.stack}\`\`\``)
           ]

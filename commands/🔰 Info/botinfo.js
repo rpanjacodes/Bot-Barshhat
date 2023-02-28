@@ -1,9 +1,8 @@
-const Discord = require("discord.js");
-let os = require("os");
-let cpuStat = require("cpu-stat");
-const config = require("../../botconfig/config");
-const ee = require("../../botconfig/embed");
-const {duration } = require("../../handlers/functions")
+//(c) R.Panja And Aman
+const os = require("os"),
+cpuStat = require("cpu-stat"),
+{ duration } = require("../../handlers/functions");
+
 module.exports = {
     name: "botinfo",
     aliases: ["info"],
@@ -11,6 +10,13 @@ module.exports = {
     description: "Sends detailed info about the client",
     usage: "botinfo",
     run: async (client, message, args, cmduser, text, prefix) => {
+    const {
+      config,
+      discord: {
+        EmbedBuilder
+      }
+    } = client;
+    
     try{
       cpuStat.usagePercent(function (e, percent, seconds) {
           if (e) {
@@ -20,12 +26,12 @@ module.exports = {
           let connectedchannelsamount = 0;
           let guilds = client.guilds.cache.map((guild) => guild);
           for (let i = 0; i < guilds.length; i++) {
-              if (guilds[i].me.voice.channel) connectedchannelsamount += 1;
+              if (guilds[i].members.me.voice.channel) connectedchannelsamount += 1;
           }
-          const botinfo = new Discord.EmbedBuilder()
+          const botinfo = new EmbedBuilder()
               .setAuthor({ name: client.user.username, iconURL: client.user.displayAvatarURL() })
               .setTitle("__**Stats:**__")
-              .setColor(ee.color)
+              .setColor(config.color)
               .addFields(
                 {
                   name: "⏳ Memory Usage",
@@ -64,7 +70,7 @@ module.exports = {
                 },
                 {
                   name: "👾 Discord.js",
-                  value: `\`v${Discord.version}\``,
+                  value: `\`v${client.discord.version}\``,
                   inline: true
                 },
                 {
@@ -115,8 +121,8 @@ module.exports = {
         return message.channel.send({
           embeds: [
             new EmbedBuilder()
-            .setColor(ee.wrongcolor)
-            .setFooter({ text: ee.footertext, iconURL: ee.footericon })
+            .setColor(config.wrongcolor)
+            .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`❌ ERROR | An error occurred`)
             .setDescription(`\`\`\`${e.stack}\`\`\``)
           ]
