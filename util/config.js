@@ -3,9 +3,9 @@ module.exports = {
   fs: require("fs"),
   onboot: require('./onboot'),
   prefix: "plz ",
-  token: process.env.token,
-  b_id: process.env.b_id,
-  b_key: process.env.b_key,
+  token: process.env.token, //put token on Secrets
+  b_id: process.env.b_id, //put b_id on Secrets 
+  b_key: process.env.b_key, //put b_key on Secrets 
   color: "#cba6ff",
   wrongcolor: "#dba96b",
   dev: '909798528694489098',
