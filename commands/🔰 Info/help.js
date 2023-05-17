@@ -90,7 +90,7 @@ module.exports = {
           embeds: [
             new EmbedBuilder()
             .setColor(config.wrongcolor)
-            .setImage(config.help.image)
+            .setImage(config.help_image)
             .setFooter({ text: config.footertext, iconURL: config.footericon })
             .setTitle(`❌ ERROR | An error occurred`)
             .setDescription(`\`\`\`${e.stack}\`\`\``)
